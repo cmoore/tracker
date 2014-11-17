@@ -16,6 +16,7 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/cmoore/Desktop/ich_bin_minecraft/vigo/canary.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/CanaryMod"/>
+	<classpathentry kind="lib" path="/CanaryMod/target/CanaryMod-1.8.0-1.2.0-SNAPSHOT-shaded.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

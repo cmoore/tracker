@@ -4,12 +4,9 @@ package io.ivy.tracker;
 import net.canarymod.Canary;
 import net.canarymod.api.entity.Entity;
 import net.canarymod.api.entity.EntityType;
-import net.canarymod.api.entity.living.animal.Horse;
 import net.canarymod.api.entity.living.humanoid.NonPlayableCharacter;
 import net.canarymod.api.entity.living.humanoid.Player;
-import net.canarymod.api.entity.living.monster.Zombie;
 import net.canarymod.api.factory.EntityFactory;
-import net.canarymod.api.inventory.Item;
 import net.canarymod.api.inventory.ItemType;
 import net.canarymod.api.scoreboard.Score;
 import net.canarymod.api.scoreboard.ScoreObjective;
@@ -27,7 +24,6 @@ import net.canarymod.warp.Warp;
 import net.canarymod.api.world.blocks.Block;
 import net.canarymod.api.world.blocks.BlockType;
 import net.canarymod.api.world.blocks.Sign;
-import net.canarymod.api.world.position.Location;
 
 public class TrackerListener implements PluginListener {
 
@@ -204,16 +200,6 @@ public class TrackerListener implements PluginListener {
 			Canary.log.info("NPC NAMED");
 			Canary.log.info(npc.getDisplayName());
 		}
-		
-/*		if (entity.getEntityType().equals(EntityType.ZOMBIE)) {
-			Zombie zombie = (Zombie) entity;
-			Horse horse = (Horse) Canary.factory().getEntityFactory().newEntity(EntityType.SKELETONHORSE, zombie.getLocation());
-			horse.setTamed(true);
-			horse.setOwner(zombie);
-			horse.spawn();
-			Canary.log.info("Yeee haw!");
-		}
-		*/
 	}
 
 	@HookHandler

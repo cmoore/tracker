@@ -60,10 +60,10 @@
                         </goals>
                         <configuration>
                         	<finalName>tracker-shade</finalName>
-                        	<outputFile>../../plugins/${project.artifactId}.jar</outputFile>
+                        	<!-- <outputFile>../../plugins/${project.artifactId}.jar</outputFile> -->
                             <shadedArtifactAttached>false</shadedArtifactAttached>
                             <shadedClassifierName>shaded</shadedClassifierName>
-                        </configuration>
+                        </configuration>                      
                     </execution>
                 </executions>
             </plugin>
