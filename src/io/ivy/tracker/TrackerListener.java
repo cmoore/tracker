@@ -1,11 +1,15 @@
 package io.ivy.tracker;
 
-
 import net.canarymod.Canary;
 import net.canarymod.api.entity.Entity;
 import net.canarymod.api.entity.EntityType;
+import net.canarymod.api.entity.living.CanarySnowman;
+import net.canarymod.api.entity.living.humanoid.CanaryVillager;
 import net.canarymod.api.entity.living.humanoid.NonPlayableCharacter;
 import net.canarymod.api.entity.living.humanoid.Player;
+import net.canarymod.api.entity.vehicle.Minecart;
+import net.canarymod.api.entity.vehicle.Vehicle;
+import net.canarymod.api.factory.AIFactory;
 import net.canarymod.api.factory.EntityFactory;
 import net.canarymod.api.inventory.ItemType;
 import net.canarymod.api.scoreboard.Score;
@@ -14,19 +18,22 @@ import net.canarymod.api.scoreboard.ScorePosition;
 import net.canarymod.api.scoreboard.Scoreboard;
 import net.canarymod.hook.HookHandler;
 import net.canarymod.hook.entity.EntitySpawnHook;
+import net.canarymod.hook.entity.MinecartActivateHook;
+import net.canarymod.hook.entity.VehicleEnterHook;
 import net.canarymod.hook.player.BlockDestroyHook;
 import net.canarymod.hook.player.BlockRightClickHook;
 import net.canarymod.hook.player.ConnectionHook;
 import net.canarymod.hook.player.LevelUpHook;
-import net.canarymod.hook.world.TimeChangeHook;
+import net.canarymod.hook.world.WeatherChangeHook;
 import net.canarymod.plugin.PluginListener;
 import net.canarymod.warp.Warp;
+import net.canarymod.api.world.World;
 import net.canarymod.api.world.blocks.Block;
 import net.canarymod.api.world.blocks.BlockType;
 import net.canarymod.api.world.blocks.Sign;
 
 public class TrackerListener implements PluginListener {
-
+		
 	public Integer get_level( Player player ) {
 		Scoreboard scoreboard = Canary.scoreboards().getScoreboard( "level_scoreboard");
 		ScoreObjective obj = scoreboard.getScoreObjective("level_objective");
@@ -74,11 +81,66 @@ public class TrackerListener implements PluginListener {
 	}
 
 	
+/*
 	@HookHandler
-	public void onTimeChangeHook(TimeChangeHook hook) {
-		
+	public void onTimeChangeHook(TimeChangeHook hook) {		
+	}
+*/
+
+	@HookHandler
+	public void onMinecartActivateHook(MinecartActivateHook hook) {
+		Minecart cart = hook.getMinecart();
+		//cart.setRollingDirection(1);
+		cart.setMotionX(20);
+		//cart.setRollingAmplitude(20);
+	}
+
+	/*	
+	@HookHandler
+	public void onItemTouchGroundHook(ItemTouchGroundHook hook) {
+		Canary.log.debug("Item on ground.");
+		Entity entity = hook.getEntityItem();
+		entity.destroy();
+	}
+	*/
+	
+	@HookHandler
+	public void onVehicleEnterHook(VehicleEnterHook hook) {
+		Vehicle vehicle = hook.getVehicle();
+		if (vehicle.isMinecart()) {
+			vehicle.setMotionX(20);
+		}
 	}
 	
+	@HookHandler
+	public void onWeatherChangeHook (WeatherChangeHook hook) {
+		Canary.log.info("*** WEATHER CHANGE");
+		Canary.log.info(hook.toString());
+		World world = hook.getWorld();
+		if (world.getThunderStrength() > 0) {
+			Canary.log.info("NO THUNDER PLEASE");
+			world.setThundering(false);
+			world.setRaining(false);
+		}
+		if (world.getRainStrength() > 0) {
+			Canary.log.info("NO RAIN PLEASE");
+			world.setRaining(false);
+		}
+	}
+	
+	/*
+	@HookHandler
+	public void onTimeChangeHook(TimeChangeHook hook) {
+		if (hook.getWorld().getName().equals("default")) {
+			Canary.log.info("**** TIME CHANGE");
+			World world = hook.getWorld();
+			if (world.getName().equals("default") && world.getRelativeTime() > 6700) {
+				world.setTime(1000);
+				Canary.log.info("*** CHANGED TIME");
+			}
+		}
+	}
+	*/
 	
 	@SuppressWarnings("deprecation")
 	@HookHandler
@@ -89,24 +151,38 @@ public class TrackerListener implements PluginListener {
 		if (the_block.getType() == BlockType.SignPost) {
 			Sign sign = (Sign) hook.getBlockClicked().getTileEntity();
 
-			if (sign.getTextOnLine(0).equals("testing")) {
-				player.notice("Spawning...");
+			
+			if (sign.getTextOnLine(0).equals("Villager")) {
 				EntityFactory the_fac = Canary.factory().getEntityFactory();
-				NonPlayableCharacter npc = the_fac.newNPC("Gorgon", player.getLocation());
-				npc.teleportTo(player.getLocation());
-				if (npc.canSpawn()) {
-					Canary.log.info("canSpawn is true.");
-				}
-				npc.spawn();
+				CanaryVillager vger = (CanaryVillager) the_fac.newEntityLiving(EntityType.VILLAGER, player.getLocation());
+				vger.spawn();
 			}
+			if (sign.getTextOnLine(0).equals("testing")) {
+				EntityFactory the_fac = Canary.factory().getEntityFactory();
+				AIFactory behave = Canary.factory().getAIFactory();
+				CanarySnowman snowmans = (CanarySnowman) the_fac.newEntity(EntityType.SNOWMAN, player.getWorld().getSpawnLocation());
+				snowmans.spawn();
+				behave.newAIFindEntityNearestPlayer(snowmans);
+			}
+			
 			if (sign.getTextOnLine(0).equals("To Henry") &&
-					sign.getTextOnLine(1).equals("World")) {
+				sign.getTextOnLine(1).equals("World")) {
 				Warp the_warp = Canary.warps().getWarp("henry");
 				the_warp.warp(player);
 			}
 			
 			if (sign.getTextOnLine(0).equals("Dover")) {
 				player.teleportTo(1876, 84, 451);
+			}
+			
+			if (sign.getTextOnLine(0).equals("Minecart")) {
+				player.getInventory().addItem(ItemType.Minecart, 1);
+				player.getInventory().update();
+			}
+			
+			if (sign.getTextOnLine(0).equals("Signs")) {
+				player.getInventory().addItem(ItemType.Sign, 20);
+				player.getInventory().update();
 			}
 			
 			if (sign.getTextOnLine(0).equals("Cave")) {
@@ -121,7 +197,7 @@ public class TrackerListener implements PluginListener {
 				the_block.setType(BlockType.Air);
 				the_block.update();
 			}
-			
+		
 			if (sign.getTextOnLine(0).equals("spawn")) {
 				String to_player = sign.getTextOnLine(1);
 				if (player.getName().equals(to_player)) {
@@ -145,6 +221,11 @@ public class TrackerListener implements PluginListener {
 						
 			if (sign.getTextOnLine(0).equals("Redstone")) {
 				player.getInventory().addItem(ItemType.RedStone, 64);
+				player.getInventory().update();
+			}
+			
+			if (sign.getTextOnLine(0).equals("Spruce")) {
+				player.getInventory().addItem(ItemType.SpruceWood, 64);
 				player.getInventory().update();
 			}
 			
@@ -177,11 +258,10 @@ public class TrackerListener implements PluginListener {
 				player.getInventory().update();
 			}
 
-			
-			
 			if (sign.getTextOnLine(0).equals("100xp")) {
 				add_experience(player, 100);
 			}
+			
 			if (sign.getTextOnLine(0).equals("resetxp")) {
 				Scoreboard scoreboard = Canary.scoreboards().getScoreboard("experience_scoreboard");
 				ScoreObjective obj = scoreboard.getScoreObjective("experience_objective");

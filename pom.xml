@@ -3,7 +3,6 @@
   <groupId>Tracker</groupId>
   <artifactId>tracker</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-
 <properties>
   <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 </properties>  
@@ -40,33 +39,27 @@
 	  	</includes>
 	  </resource>
   </resources>
-  
-    <sourceDirectory>src</sourceDirectory>
-    <plugins>
-
-
-
-
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>2.0</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                        	<finalName>tracker-shade</finalName>
-                        	<!-- <outputFile>../../plugins/${project.artifactId}.jar</outputFile> -->
-                            <shadedArtifactAttached>false</shadedArtifactAttached>
-                            <shadedClassifierName>shaded</shadedClassifierName>
-                        </configuration>                      
-                    </execution>
-                </executions>
-            </plugin>
+  <sourceDirectory>src</sourceDirectory>
+  <plugins>
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-shade-plugin</artifactId>
+      <version>2.0</version>
+      <executions>
+        <execution>
+          <phase>package</phase>
+          <goals>
+            <goal>shade</goal>
+          </goals>
+          <configuration>
+            <finalName>tracker-shade</finalName>
+            <outputFile>c:\users\cmoore\Desktop\ich_bin_minecraft\vigo\plugins\${project.artifactId}.jar</outputFile>
+            <shadedArtifactAttached>false</shadedArtifactAttached>
+            <shadedClassifierName>shaded</shadedClassifierName>
+          </configuration>                      
+        </execution>
+      </executions>
+    </plugin>
 
     <!--
       <plugin>
@@ -79,14 +72,14 @@
         </configuration>
       </plugin>
       -->
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.1</version>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-        </configuration>
-      </plugin>
-    </plugins>
+    <plugin>
+      <artifactId>maven-compiler-plugin</artifactId>
+      <version>3.1</version>
+      <configuration>
+        <source>1.8</source>
+        <target>1.8</target>
+      </configuration>
+    </plugin>
+  </plugins>
   </build>
 </project>

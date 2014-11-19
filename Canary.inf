@@ -2,4 +2,3 @@ main-class = io.ivy.tracker.Tracker
 name = Tracker
 author = cmoore
 version = 1
-lang-name = what
