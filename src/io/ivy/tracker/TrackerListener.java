@@ -1,5 +1,10 @@
 package io.ivy.tracker;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Consumer;
+
 import net.canarymod.Canary;
 import net.canarymod.api.entity.Entity;
 import net.canarymod.api.entity.EntityType;
@@ -11,7 +16,10 @@ import net.canarymod.api.entity.vehicle.Minecart;
 import net.canarymod.api.entity.vehicle.Vehicle;
 import net.canarymod.api.factory.AIFactory;
 import net.canarymod.api.factory.EntityFactory;
+import net.canarymod.api.factory.ItemFactory;
+import net.canarymod.api.inventory.Item;
 import net.canarymod.api.inventory.ItemType;
+import net.canarymod.api.inventory.PlayerInventory;
 import net.canarymod.api.scoreboard.Score;
 import net.canarymod.api.scoreboard.ScoreObjective;
 import net.canarymod.api.scoreboard.ScorePosition;
@@ -112,22 +120,7 @@ public class TrackerListener implements PluginListener {
 		}
 	}
 	
-	@HookHandler
-	public void onWeatherChangeHook (WeatherChangeHook hook) {
-		Canary.log.info("*** WEATHER CHANGE");
-		Canary.log.info(hook.toString());
-		World world = hook.getWorld();
-		if (world.getThunderStrength() > 0) {
-			Canary.log.info("NO THUNDER PLEASE");
-			world.setThundering(false);
-			world.setRaining(false);
-		}
-		if (world.getRainStrength() > 0) {
-			Canary.log.info("NO RAIN PLEASE");
-			world.setRaining(false);
-		}
-	}
-	
+
 	/*
 	@HookHandler
 	public void onTimeChangeHook(TimeChangeHook hook) {
@@ -157,12 +150,21 @@ public class TrackerListener implements PluginListener {
 				CanaryVillager vger = (CanaryVillager) the_fac.newEntityLiving(EntityType.VILLAGER, player.getLocation());
 				vger.spawn();
 			}
-			if (sign.getTextOnLine(0).equals("testing")) {
-				EntityFactory the_fac = Canary.factory().getEntityFactory();
-				AIFactory behave = Canary.factory().getAIFactory();
-				CanarySnowman snowmans = (CanarySnowman) the_fac.newEntity(EntityType.SNOWMAN, player.getWorld().getSpawnLocation());
-				snowmans.spawn();
-				behave.newAIFindEntityNearestPlayer(snowmans);
+			
+			if (sign.getTextOnLine(0).equals("Farmer")) {
+				EntityFactory the_factory = Canary.factory().getEntityFactory();
+				CanaryVillager vger = (CanaryVillager) the_factory.newEntityLiving(EntityType.FARMER, player.getLocation());
+				vger.spawn();
+			}
+			
+			if (sign.getTextOnLine(0).equals("Inventory")) {
+				PlayerInventory inventory = player.getInventory();
+				inventory.clearContents();
+				ItemFactory ifactory = Canary.factory().getItemFactory();
+				Item the_item = ifactory.newItem(ItemType.Sign);
+				the_item.setAmount(10);
+				inventory.addItem(the_item);
+				inventory.update();
 			}
 			
 			if (sign.getTextOnLine(0).equals("To Henry") &&
