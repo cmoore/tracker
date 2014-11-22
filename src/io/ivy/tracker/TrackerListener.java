@@ -144,6 +144,10 @@ public class TrackerListener implements PluginListener {
 		if (the_block.getType() == BlockType.SignPost) {
 			Sign sign = (Sign) hook.getBlockClicked().getTileEntity();
 
+      if (sign.getTextOnLine(0).equals("Hunger Games")) {
+          Warp the_warp = Canary.warps().getWarp("Hunger_Games");
+          the_warp.warp(player);
+      }
 			
 			if (sign.getTextOnLine(0).equals("Villager")) {
 				EntityFactory the_fac = Canary.factory().getEntityFactory();
