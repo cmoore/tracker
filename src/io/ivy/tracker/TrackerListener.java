@@ -39,6 +39,9 @@ import net.canarymod.api.world.World;
 import net.canarymod.api.world.blocks.Block;
 import net.canarymod.api.world.blocks.BlockType;
 import net.canarymod.api.world.blocks.Sign;
+import net.canarymod.api.world.blocks.properties.*;
+import net.canarymod.api.factory.NBTFactory;
+import net.canarymod.api.nbt.CompoundTag;
 
 public class TrackerListener implements PluginListener {
 		
@@ -98,9 +101,7 @@ public class TrackerListener implements PluginListener {
 	@HookHandler
 	public void onMinecartActivateHook(MinecartActivateHook hook) {
 		Minecart cart = hook.getMinecart();
-		//cart.setRollingDirection(1);
 		cart.setMotionX(20);
-		//cart.setRollingAmplitude(20);
 	}
 
 	/*	
@@ -141,8 +142,40 @@ public class TrackerListener implements PluginListener {
 		Player player = hook.getPlayer();
 		Block the_block = hook.getBlockClicked();
 
+    if (hook.getPlayer().getName().equals("hydo")) {
+        if (hook.getPlayer().getItemHeld().equals(ItemType.Stick)) {
+            hook.getBlockClicked().getPropertyKeys().forEach(new Consumer<BlockProperty>() {
+                    @Override
+                    public void accept(BlockProperty prop) {
+                        hook.getPlayer().notice("P: ".concat(prop.getName()));
+                    }});
+        }
+    } else {
+        
 		if (the_block.getType() == BlockType.SignPost) {
 			Sign sign = (Sign) hook.getBlockClicked().getTileEntity();
+
+      if (sign.getTextOnLine(0).equals("ctitle")) {
+          player.getInventory().clearContents();
+          player.getInventory().update();
+          ItemFactory factory = Canary.factory().getItemFactory();
+          Item new_thing = factory.newItem(ItemType.Compass);
+          
+          new_thing.setDisplayName("FINKBINK");
+          player.getInventory().addItem(new_thing);
+          player.getInventory().update();
+          /*
+          CompoundTag name = Canary.factory().getNBTFactory().new
+          name.put("CustomName", "Fart Whacker");
+          name.put("CustomNameVisible", true);
+          sign.writeToTag(name);
+          sign.update();
+          */
+      }
+      
+      if (sign.getTextOnLine(0).equals("Nevermind!")) {
+          Canary.warps().getWarp("gtfo").warp(player);
+      }
 
       if (sign.getTextOnLine(0).equals("Hunger Games")) {
           Warp the_warp = Canary.warps().getWarp("Hunger_Games");
@@ -264,10 +297,6 @@ public class TrackerListener implements PluginListener {
 				player.getInventory().update();
 			}
 
-			if (sign.getTextOnLine(0).equals("100xp")) {
-				add_experience(player, 100);
-			}
-			
 			if (sign.getTextOnLine(0).equals("resetxp")) {
 				Scoreboard scoreboard = Canary.scoreboards().getScoreboard("experience_scoreboard");
 				ScoreObjective obj = scoreboard.getScoreObjective("experience_objective");
@@ -277,7 +306,7 @@ public class TrackerListener implements PluginListener {
 			}
 		}
 	}
-
+  }
 	@HookHandler
 	public void onEntitySpawnHook(EntitySpawnHook hook) {
 		Entity entity = hook.getEntity();
