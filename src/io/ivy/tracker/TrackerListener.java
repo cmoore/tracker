@@ -41,7 +41,8 @@ import net.canarymod.api.world.blocks.BlockType;
 import net.canarymod.api.world.blocks.Sign;
 import net.canarymod.api.world.blocks.properties.*;
 import net.canarymod.api.factory.NBTFactory;
-import net.canarymod.api.nbt.CompoundTag;
+import net.canarymod.api.nbt.*;
+import net.canarymod.api.world.blocks.TileEntity;
 
 public class TrackerListener implements PluginListener {
 		
@@ -142,67 +143,66 @@ public class TrackerListener implements PluginListener {
 		Player player = hook.getPlayer();
 		Block the_block = hook.getBlockClicked();
 
-    if (hook.getPlayer().getName().equals("hydo")) {
-        if (hook.getPlayer().getItemHeld().equals(ItemType.Stick)) {
-            hook.getBlockClicked().getPropertyKeys().forEach(new Consumer<BlockProperty>() {
-                    @Override
-                    public void accept(BlockProperty prop) {
-                        hook.getPlayer().notice("P: ".concat(prop.getName()));
-                    }});
+
+    if (player.getName().equals("hydo")) {
+        if (player.getItemHeld() != null) {
+            if (player.getItemHeld().getType().equals(ItemType.Stick)) {
+                CompoundTag ctag = the_block.getTileEntity().getDataTag();
+
+                Canary.log.info("Shitfuck.");
+                
+                ctag.put("CustomName", "FARTAHONTAS");
+                ctag.put("CustomNameDisplay", true);
+
+                TileEntity te = the_block.getTileEntity();
+                te.writeToTag(ctag);
+                te.update();
+                the_block.update();
+            }
+            if (player.getItemHeld().getType().equals(ItemType.CarrotOnAStick)) {
+                CompoundTag ctag = the_block.getTileEntity().getDataTag();
+
+                ctag.keySet().forEach(new Consumer<String>() {
+                        @Override
+                        public void accept(String s) {
+                            Canary.log.info("S: " + s + " V: " + ctag.get(s).toString());
+                        }});
+            }
         }
     } else {
-        
-		if (the_block.getType() == BlockType.SignPost) {
-			Sign sign = (Sign) hook.getBlockClicked().getTileEntity();
+        if (the_block.getType().equals(BlockType.SignPost)) {
+            Sign sign = (Sign) the_block.getTileEntity();
+            
+            if (sign.getTextOnLine(0).equals("Nevermind!")) {
+                Canary.warps().getWarp("gtfo").warp(player);
+            }
 
-      if (sign.getTextOnLine(0).equals("ctitle")) {
-          player.getInventory().clearContents();
-          player.getInventory().update();
-          ItemFactory factory = Canary.factory().getItemFactory();
-          Item new_thing = factory.newItem(ItemType.Compass);
-          
-          new_thing.setDisplayName("FINKBINK");
-          player.getInventory().addItem(new_thing);
-          player.getInventory().update();
-          /*
-          CompoundTag name = Canary.factory().getNBTFactory().new
-          name.put("CustomName", "Fart Whacker");
-          name.put("CustomNameVisible", true);
-          sign.writeToTag(name);
-          sign.update();
-          */
-      }
-      
-      if (sign.getTextOnLine(0).equals("Nevermind!")) {
-          Canary.warps().getWarp("gtfo").warp(player);
-      }
-
-      if (sign.getTextOnLine(0).equals("Hunger Games")) {
-          Warp the_warp = Canary.warps().getWarp("Hunger_Games");
-          the_warp.warp(player);
-      }
+            if (sign.getTextOnLine(0).equals("Hunger Games")) {
+                Warp the_warp = Canary.warps().getWarp("Hunger_Games");
+                the_warp.warp(player);
+            }
 			
-			if (sign.getTextOnLine(0).equals("Villager")) {
-				EntityFactory the_fac = Canary.factory().getEntityFactory();
-				CanaryVillager vger = (CanaryVillager) the_fac.newEntityLiving(EntityType.VILLAGER, player.getLocation());
-				vger.spawn();
-			}
+            if (sign.getTextOnLine(0).equals("Villager")) {
+                EntityFactory the_fac = Canary.factory().getEntityFactory();
+                CanaryVillager vger = (CanaryVillager) the_fac.newEntityLiving(EntityType.VILLAGER, player.getLocation());
+                vger.spawn();
+            }
 			
-			if (sign.getTextOnLine(0).equals("Farmer")) {
-				EntityFactory the_factory = Canary.factory().getEntityFactory();
-				CanaryVillager vger = (CanaryVillager) the_factory.newEntityLiving(EntityType.FARMER, player.getLocation());
-				vger.spawn();
-			}
+            if (sign.getTextOnLine(0).equals("Farmer")) {
+                EntityFactory the_factory = Canary.factory().getEntityFactory();
+                CanaryVillager vger = (CanaryVillager) the_factory.newEntityLiving(EntityType.FARMER, player.getLocation());
+                vger.spawn();
+            }
 			
-			if (sign.getTextOnLine(0).equals("Inventory")) {
-				PlayerInventory inventory = player.getInventory();
-				inventory.clearContents();
-				ItemFactory ifactory = Canary.factory().getItemFactory();
-				Item the_item = ifactory.newItem(ItemType.Sign);
-				the_item.setAmount(10);
-				inventory.addItem(the_item);
-				inventory.update();
-			}
+            if (sign.getTextOnLine(0).equals("Inventory")) {
+                PlayerInventory inventory = player.getInventory();
+                inventory.clearContents();
+                ItemFactory ifactory = Canary.factory().getItemFactory();
+                Item the_item = ifactory.newItem(ItemType.Sign);
+                the_item.setAmount(10);
+                inventory.addItem(the_item);
+                inventory.update();
+            }
 			
 			if (sign.getTextOnLine(0).equals("To Henry") &&
 				sign.getTextOnLine(1).equals("World")) {
@@ -305,8 +305,9 @@ public class TrackerListener implements PluginListener {
 				level.update();
 			}
 		}
-	}
   }
+  }
+    
 	@HookHandler
 	public void onEntitySpawnHook(EntitySpawnHook hook) {
 		Entity entity = hook.getEntity();
