@@ -137,6 +137,15 @@ public class TrackerListener implements PluginListener {
 	}
 	*/
 	
+	private void show_tags(CompoundTag ctag, Player player) {
+        ctag.keySet().forEach(new Consumer<String>() {
+            @Override
+            public void accept(String s) {
+                player.notice("S: " + s + " V: " + ctag.get(s).toString());
+            }});
+		
+	}
+	
 	@SuppressWarnings("deprecation")
 	@HookHandler
 	public void onBlockRightClickHook(BlockRightClickHook hook) {
@@ -146,27 +155,26 @@ public class TrackerListener implements PluginListener {
 
     if (player.getName().equals("hydo")) {
         if (player.getItemHeld() != null) {
-            if (player.getItemHeld().getType().equals(ItemType.Stick)) {
-                CompoundTag ctag = the_block.getTileEntity().getDataTag();
+        	if (player.getItemHeld().getType().equals(ItemType.CarrotOnAStick)) {
+            	TileEntity tile_entity = the_block.getTileEntity();
+                CompoundTag ctag = tile_entity.getMetaTag();
 
-                Canary.log.info("Shitfuck.");
+                player.notice("Tags");
+                show_tags(ctag, player);	
+
+        	}
+            if (player.getItemHeld().getType().equals(ItemType.Stick)) {
+            	
+            	TileEntity tile_entity = the_block.getTileEntity();
+                CompoundTag ctag = tile_entity.getMetaTag();
                 
                 ctag.put("CustomName", "FARTAHONTAS");
-                ctag.put("CustomNameDisplay", true);
+                ctag.put("CustomNameVisible", true);
+                
+                ctag = the_block.getTileEntity().getMetaTag();
 
-                TileEntity te = the_block.getTileEntity();
-                te.writeToTag(ctag);
-                te.update();
-                the_block.update();
-            }
-            if (player.getItemHeld().getType().equals(ItemType.CarrotOnAStick)) {
-                CompoundTag ctag = the_block.getTileEntity().getDataTag();
-
-                ctag.keySet().forEach(new Consumer<String>() {
-                        @Override
-                        public void accept(String s) {
-                            Canary.log.info("S: " + s + " V: " + ctag.get(s).toString());
-                        }});
+                player.notice("After Write");
+                show_tags(ctag, player);		
             }
         }
     } else {
