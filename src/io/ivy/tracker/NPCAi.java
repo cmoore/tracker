@@ -1,3 +1,5 @@
+// -*- Mode: jde; eval: (hs-hide-level 2) -*-
+
 package io.ivy.tracker;
 
 import net.canarymod.Canary;

@@ -1,3 +1,5 @@
+// -*- Mode: jde; eval: (hs-hide-level 2) -*-
+
 package io.ivy.tracker;
 
 import net.canarymod.Canary;
@@ -7,7 +9,6 @@ public class Tracker extends Plugin {
 	
     @Override
     public boolean enable() {
-        getLogman().info("loading...");
         Canary.hooks().registerListener(new TrackerListener(), this);
         return true;
     }
