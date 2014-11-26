@@ -2,55 +2,28 @@
 
 package io.ivy.tracker;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.BiConsumer;
-import java.util.stream.*;
 import java.util.concurrent.Callable;
 
-import net.canarymod.commandsys.Command;
 import net.canarymod.commandsys.CommandListener;
-import net.canarymod.chat.MessageReceiver;
-
 import net.canarymod.Canary;
-import net.canarymod.api.entity.Entity;
-import net.canarymod.api.entity.EntityType;
-import net.canarymod.api.entity.living.CanarySnowman;
-import net.canarymod.api.entity.living.humanoid.CanaryVillager;
-import net.canarymod.api.entity.living.humanoid.NonPlayableCharacter;
 import net.canarymod.api.entity.living.humanoid.Player;
-import net.canarymod.api.entity.vehicle.Minecart;
-import net.canarymod.api.entity.vehicle.Vehicle;
-import net.canarymod.api.factory.AIFactory;
-import net.canarymod.api.factory.EntityFactory;
 import net.canarymod.api.factory.ItemFactory;
 import net.canarymod.api.inventory.Item;
 import net.canarymod.api.inventory.ItemType;
-import net.canarymod.api.inventory.PlayerInventory;
-import net.canarymod.api.scoreboard.Score;
-import net.canarymod.api.scoreboard.ScoreObjective;
-import net.canarymod.api.scoreboard.ScorePosition;
-import net.canarymod.api.scoreboard.Scoreboard;
 import net.canarymod.hook.HookHandler;
 import net.canarymod.hook.entity.EntitySpawnHook;
-import net.canarymod.hook.entity.MinecartActivateHook;
-import net.canarymod.hook.entity.VehicleEnterHook;
 import net.canarymod.hook.player.BlockDestroyHook;
 import net.canarymod.hook.player.BlockRightClickHook;
 import net.canarymod.hook.player.BlockLeftClickHook;
 import net.canarymod.hook.player.ConnectionHook;
-import net.canarymod.hook.player.LevelUpHook;
-import net.canarymod.hook.world.WeatherChangeHook;
 import net.canarymod.plugin.PluginListener;
-import net.canarymod.warp.Warp;
 import net.canarymod.api.world.World;
 import net.canarymod.api.world.blocks.Block;
 import net.canarymod.api.world.blocks.BlockType;
 import net.canarymod.api.world.blocks.Sign;
-import net.canarymod.api.world.blocks.properties.*;
-import net.canarymod.api.factory.NBTFactory;
 import net.canarymod.api.nbt.*;
 import net.canarymod.api.world.blocks.TileEntity;
 import net.canarymod.api.world.Chunk;
@@ -104,7 +77,6 @@ public class TrackerListener implements PluginListener, CommandListener {
             }
 
             if (sign.getTextOnLine(0).equals("sticky")) {
-
                 player.getInventory().clearContents();
                 
                 ItemFactory factory = Canary.factory().getItemFactory();
@@ -113,14 +85,24 @@ public class TrackerListener implements PluginListener, CommandListener {
                 stick.setDisplayName("Stick of Ownership");
                 stick.setMaxAmount(1);
                 stick.setLore("Make it your own.");
+                stick.getMetaTag().put("type", "ownership");
                 player.getInventory().addItem(stick);
                 player.getInventory().update();
 
                 Item reset = factory.newItem(ItemType.Stick);
                 reset.setDisplayName("Stick of Reset");
+                reset.getMetaTag().put("type", "reset");
                 reset.setMaxAmount(1);
                 reset.setLore("Removes Ownership");
                 player.getInventory().addItem(reset);
+                player.getInventory().update();
+                
+                Item view = factory.newItem(ItemType.Stick);
+                view.setDisplayName("Stick of Viewing");
+                view.getMetaTag().put("type","viewing");
+                view.setMaxAmount(1);
+                view.setLore("View Tags");
+                player.getInventory().addItem(view);
                 player.getInventory().update();
             }
             
@@ -137,6 +119,7 @@ public class TrackerListener implements PluginListener, CommandListener {
     @HookHandler
     public void onBlockLeftClickHook(BlockLeftClickHook hook) {
         Player player = hook.getPlayer();
+        
     }
     
     @HookHandler
