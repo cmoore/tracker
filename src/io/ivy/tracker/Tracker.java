@@ -6,14 +6,20 @@ import net.canarymod.Canary;
 import net.canarymod.plugin.Plugin;
 
 public class Tracker extends Plugin {
-	
+
+    private TrackerListener listener;
+    
     @Override
     public boolean enable() {
-        Canary.hooks().registerListener(new TrackerListener(), this);
+        listener = new TrackerListener();
+        listener.setup();
+        
+        Canary.hooks().registerListener(listener, this);
         return true;
     }
 
     @Override
     public void disable() {
+        listener.stop();
     }
 }
